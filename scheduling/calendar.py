@@ -1,6 +1,9 @@
 import copy
 from typing import List, Optional
 
+from scheduling.machine_pool import MachinePool
+from scheduling.machines import BaseMachine
+
 
 class AllocationError(Exception):
     def __init__(self, time_to_allocate: int):
@@ -97,3 +100,13 @@ class Period:
             raise AllocationError(minutes_to_allocate)
 
         return self._allocate_row(minutes_to_allocate, days_to_allocate, shift)
+
+
+class MachineCalendar:
+    def __init__(self, machine_pool: MachinePool, calendar_length_days: int = 365):
+        self.calendar = {
+            machine: Period(200) for machine in machine_pool.get_all_machines()
+        }
+
+    def __getitem__(self, item: BaseMachine):
+        return self.calendar[item]

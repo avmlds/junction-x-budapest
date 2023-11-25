@@ -20,6 +20,7 @@ from scheduling.diseases import (
     Lung,
     LungSpecial,
     WholeBrain,
+    Cancer,
 )
 
 
@@ -40,10 +41,21 @@ class InvalidCancerType(Exception):
 
 class BaseMachine(AllocatableEntity):
     _name: str
-    _available_treatments: Set[str]
+    _available_treatments: Set[Cancer]
 
     def name(self):
         return self._name
+
+    @property
+    def total_quantity(self):
+        return 1
+
+    def get_all_machines(self):
+        return self
+
+    @classmethod
+    def probability_to_treat(cls):
+        return sum(cancer.probability() for cancer in cls._available_treatments)
 
     def __str__(self):
         return f"{self.__class__.__name__}(name={self.name()})"
@@ -59,10 +71,10 @@ class BaseMachine(AllocatableEntity):
     def is_allocated(self):
         return self._allocated
 
-    def allocate(self, cancer_type: str):
+    def allocate(self, cancer: Cancer):
         if self._allocated:
             raise AlreadyAllocated
-        if self.can_treat(cancer_type):
+        if self.can_treat(cancer):
             self._allocated = True
         else:
             raise
@@ -78,8 +90,8 @@ class BaseMachine(AllocatableEntity):
     def available_treatments(self):
         return self._available_treatments
 
-    def can_treat(self, cancer_type: str) -> bool:
-        return cancer_type in self._available_treatments
+    def can_treat(self, cancer: Cancer) -> bool:
+        return cancer.__class__ in self.available_treatments
 
     def on_maintenance(self) -> bool:
         return self._on_maintenance
@@ -92,22 +104,22 @@ class BaseMachine(AllocatableEntity):
         self._on_maintenance = False
         return self._on_maintenance
 
-    def machine_gen(self, cancer_type: str):
+    def machine_gen(self, cancer: Cancer):
         yield self
 
 
 class TB1Machine(BaseMachine):
     _name = MACHINE_TB1
     _available_treatments = (
-        Crainospinal.name(),
-        Breast.name(),
-        BreastSpecial.name(),
-        HeadNeck.name(),
-        Abdomen.name(),
-        Pelvis.name(),
-        Crane.name(),
-        Lung.name(),
-        LungSpecial.name(),
+        Crainospinal,
+        Breast,
+        BreastSpecial,
+        HeadNeck,
+        Abdomen,
+        Pelvis,
+        Crane,
+        Lung,
+        LungSpecial,
     )
 
 
@@ -118,14 +130,14 @@ class TB2Machine(TB1Machine):
 class VB1Machine(BaseMachine):
     _name = MACHINE_VB1
     _available_treatments = {
-        Breast.name(),
-        HeadNeck.name(),
-        Abdomen.name(),
-        Pelvis.name(),
-        Crane.name(),
-        Lung.name(),
-        LungSpecial.name(),
-        WholeBrain.name(),
+        Breast,
+        HeadNeck,
+        Abdomen,
+        Pelvis,
+        Crane,
+        Lung,
+        LungSpecial,
+        WholeBrain,
     }
 
 
@@ -135,4 +147,4 @@ class VB2Machine(VB1Machine):
 
 class UMachine(BaseMachine):
     _name = MACHINE_U
-    _available_treatments = {Breast.name(), WholeBrain.name()}
+    _available_treatments = {Breast, WholeBrain}

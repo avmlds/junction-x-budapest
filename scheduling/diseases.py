@@ -31,6 +31,12 @@ class Cancer:
     _fraction_time: List[str]
     _treatment_time: int
 
+    def __eq__(self, other):
+        return self.name() == other.name()
+
+    def __hash__(self):
+        return hash(self.name())
+
     @classmethod
     def name(cls):
         return cls.__name__.lower()
