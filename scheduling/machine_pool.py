@@ -26,7 +26,10 @@ class MachinePool(AllocatableEntity):
         return self._name
 
     def get_all_machines(self):
-        return [machine.get_all_machines() for machine in self.machines]
+        machines = []
+        for machine in self.machines:
+            machines.extend(machine.get_all_machines())
+        return machines
 
     def deallocate(self):
         raise NotImplementedError

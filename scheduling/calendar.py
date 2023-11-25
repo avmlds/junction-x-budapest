@@ -96,16 +96,24 @@ class Period:
         minutes_to_allocate: int,
         shift: Optional[int] = 0,
     ):
-        if not self.can_allocate(days_to_allocate, minutes_to_allocate):
+        if not self.can_allocate(days_to_allocate, minutes_to_allocate, shift):
             raise AllocationError(minutes_to_allocate)
 
         return self._allocate_row(minutes_to_allocate, days_to_allocate, shift)
 
 
 class MachineCalendar:
+
+    def __str__(self):
+        return f"{self.__class__.__name__}(calendar={self.calendar})"
+
+    def __repr__(self):
+        return self.__str__()
+
     def __init__(self, machine_pool: MachinePool, calendar_length_days: int = 365):
+
         self.calendar = {
-            machine: Period(200) for machine in machine_pool.get_all_machines()
+            machine: Period(calendar_length_days) for machine in machine_pool.get_all_machines()
         }
 
     def __getitem__(self, item: BaseMachine):

@@ -49,6 +49,12 @@ class Scheduler:
                 except StopIteration:
                     print("We need to extend schedule!")
                     raise Exception("We need to extend schedule!")
+            else:
+                print(
+                    f"Machine {machine.name()} was allocated for {days} days "
+                    f"to treat patient {patient.name} with {cancer.name()} cancer. "
+                    f"Treatment time will be {cancer.treatment_time_minutes()} minutes long"
+                )
 
         for machine_to_deallocate in machines_to_deallocate:
             machine_to_deallocate.deallocate()

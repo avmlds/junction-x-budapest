@@ -51,7 +51,7 @@ class BaseMachine(AllocatableEntity):
         return 1
 
     def get_all_machines(self):
-        return self
+        return [self]
 
     @classmethod
     def probability_to_treat(cls):

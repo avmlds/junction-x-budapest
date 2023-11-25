@@ -49,4 +49,4 @@ class PatientGen:
             cancer = random.choices(
                 self.cancers, weights=[cancer.probability() for cancer in self.cancers]
             )[0]
-            yield Patient(name=str(uuid.uuid4()), cancer_type=cancer())
+            yield Patient(name=str(uuid.uuid4()), cancer=cancer())

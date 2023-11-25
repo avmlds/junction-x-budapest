@@ -18,21 +18,8 @@ if __name__ == "__main__":
     patient_flow = PatientGen()
 
     scheduler = Scheduler(
+        period_length_days=100,
         machine_pool=super_pool,
         patient_generator=patient_flow,
     )
-
-    for patient in patient_flow.get_patient():
-
-        days = patient.assign_fraction_time()
-        cancer = patient.cancer
-
-        machine = super_pool.select_machine(cancer.name())
-        machine.allocate(cancer.name())
-        print(
-            f"Machine {machine.name()} was allocated for {days} days "
-            f"to treat patient {patient.name} with {cancer.name()} cancer. "
-            f"Treatment time will be {cancer.treatment_time_minutes()} minutes long"
-        )
-        machine.deallocate()
-        print(f"Machine {machine.name()} was deallocated")
+    scheduler.schedule()
