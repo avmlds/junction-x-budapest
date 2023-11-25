@@ -28,7 +28,5 @@ class AllocatableEntity:
     def get_all_machines(self):
         raise NotImplementedError
 
-    def machine_gen(
-        self, cancer_type: str
-    ) -> Generator["AllocatableEntity", Any, None]:
+    def machine_gen(self, cancer: Cancer) -> Any:
         raise NotImplementedError

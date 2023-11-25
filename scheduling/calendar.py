@@ -1,10 +1,11 @@
 import copy
-from typing import List, Optional
+from typing import List, Optional, TYPE_CHECKING
 
 import numpy as np
-from matplotlib import pyplot as plt
 
-from scheduling.machine_pool import MachinePool
+if TYPE_CHECKING:
+    from scheduling.machine_pool import MachinePool
+
 from scheduling.machines import BaseMachine
 
 
@@ -33,6 +34,12 @@ class Day:
 
     def time_left(self):
         return self._time_limit_minutes
+
+    def is_busy(self):
+        return self.time_left() < self._day_length_minutes // 2
+
+    def load_level(self) -> float:
+        return self.time_left() / self._day_length_minutes
 
     def can_allocate(self, minutes_to_allocate: int):
         return self.time_left() >= minutes_to_allocate
@@ -65,6 +72,12 @@ class Period:
     def __init__(self, period_length_days: int = 365):
         self.period_length_days = period_length_days
         self.days = [Day() for _ in range(self.period_length_days)]
+
+    def is_busy(self):
+        return sum([day.is_busy() for day in self.days]) > self.period_length_days // 2
+
+    def load_level(self):
+        return sum([day.load_level() for day in self.days]) / self.period_length_days
 
     def _can_allocate_row(
         self, minutes_to_allocate: int, days_to_allocate: int, shift: int = 0
@@ -112,7 +125,7 @@ class MachineCalendar:
     def __repr__(self):
         return self.__str__()
 
-    def __init__(self, machine_pool: MachinePool, calendar_length_days: int = 365):
+    def __init__(self, machine_pool: "MachinePool", calendar_length_days: int = 365):
         self.calendar_length_days = calendar_length_days
         self.calendar = {
             machine: Period(calendar_length_days)
@@ -126,7 +139,7 @@ class MachineCalendar:
         x = np.arange(self.calendar_length_days)
 
         num_bars_in_group = len(self.calendar.keys())
-        gap_between_bargroups = 0.15
+        gap_between_bargroups = 0.3
         gap_between_bars_in_group = 0.03
 
         bar_width = (

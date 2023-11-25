@@ -110,7 +110,7 @@ class BaseMachine(AllocatableEntity):
         return self._on_maintenance
 
     def machine_gen(self, cancer: Cancer):
-        yield self
+        return [self]
 
 
 class TB1Machine(BaseMachine):

@@ -5,18 +5,6 @@ from scheduling.diseases import Cancer
 from scheduling.machines import BaseMachine
 
 
-class MachinePriority:
-    """Priority allocator.
-
-    Order machines according to their capabilities.
-    Less capable machines will go first.
-    """
-
-    @classmethod
-    def prioritize(cls, machines: List[BaseMachine]):
-        return sorted(machines, key=lambda machine: machine.probability_to_treat())
-
-
 class MachinePool(AllocatableEntity):
     def __init__(self, name: str, machines: List[Union[BaseMachine, "MachinePool"]]):
         self._name = name
@@ -47,7 +35,7 @@ class MachinePool(AllocatableEntity):
         return all(machine.is_allocated for machine in self.machines)
 
     def allocate(self, cancer: Cancer):
-        machine = self.select_machine(cancer)
+        machine = self.select_machines(cancer)
         machine.allocate(cancer)
         return machine
 
@@ -58,16 +46,17 @@ class MachinePool(AllocatableEntity):
             treatments.update(machine.available_treatments)
         return treatments
 
-    def select_machine(self, cancer: Cancer):
-        return next(self.machine_gen(cancer))
+    def select_machines(self, cancer: Cancer):
+        return self.machine_gen(cancer)
 
     def can_treat(self, cancer: Cancer):
         return cancer.__class__ in self.available_treatments
 
     def machine_gen(self, cancer: Cancer):
-        machines = [
-            m for m in self.machines if m.can_treat(cancer) and not m.is_allocated
-        ]
 
-        for machine in MachinePriority.prioritize(machines):
-            yield from machine.machine_gen(cancer)
+        machines = []
+        for m in self.machines:
+            if m.can_treat(cancer) and not m.is_allocated:
+                machines.extend(m.machine_gen(cancer))
+
+        return sorted(machines, key=lambda machine: machine.name())
