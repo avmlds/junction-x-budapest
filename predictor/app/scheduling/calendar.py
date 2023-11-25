@@ -4,6 +4,8 @@ from typing import List, Optional, TYPE_CHECKING
 import numpy as np
 from prettytable import PrettyTable
 
+from scheduling.constants import YEAR_LEN_DAYS
+
 if TYPE_CHECKING:
     from scheduling.machine_pool import MachinePool
 
@@ -18,9 +20,6 @@ class AllocationError(Exception):
 class NotEnoughDaysError(Exception):
     def __init__(self):
         super().__init__("Not enough days to allocate")
-
-
-YEAR_LEN_DAYS = 356
 
 
 class Day:
@@ -157,6 +156,33 @@ class MachineCalendar:
     def __getitem__(self, item: BaseMachine):
         return self.calendar[item]
 
+    def get_daily_load(self, shift: int):
+        daily_load = {"items": [], "average_load": 0}
+
+        if shift >= self.calendar_length_days:
+            raise NotEnoughDaysError
+
+        machines = sorted(
+            [machine for machine in self.calendar.keys()],
+            key=lambda machine: machine.name(),
+        )
+        sum_percentages = 0
+        for machine in machines:
+
+            load_level = self.calendar[machine].days[shift].load_level()
+            utilization_percentage = round((1 - load_level) * 100, 2)
+            daily_load["items"].append(
+                {
+                    "machine_name": machine.name(),
+                    "load": utilization_percentage,
+                }
+            )
+
+            sum_percentages += (1 - load_level) * 100
+
+        daily_load["average_load"] = round(sum_percentages / len(machines), 2)
+        return daily_load
+
     def get_report_data(self, days: int = YEAR_LEN_DAYS):
         machines = sorted(
             [machine for machine in self.calendar.keys()],
@@ -176,7 +202,7 @@ class MachineCalendar:
             sum_percentages = 0
             for machine in machines:
                 load_level = self.calendar[machine].days[day_pointer].load_level()
-                utilization_percentage = round(1 - load_level) * 100
+                utilization_percentage = round(1 - load_level, 2) * 100
                 sum_percentages += (1 - load_level) * 100
                 row.append(f"{utilization_percentage}%")
 

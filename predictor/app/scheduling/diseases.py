@@ -22,6 +22,16 @@ from scheduling.constants import (
     LUNG_SPECIAL_FRACTION_NUMBER,
     WHOLE_BRAIN_PROBABILITY,
     WHOLE_BRAIN_FRACTION_NUMBER,
+    CRAINOSPINAL,
+    BREAST,
+    BREAST_SPECIAL,
+    HEAD_NECK,
+    ABDOMEN,
+    PELVIS,
+    CRANE,
+    LUNG,
+    LUNG_SPECIAL,
+    WHOLE_BRAIN,
 )
 
 
@@ -30,6 +40,12 @@ class Cancer:
     _probability: float
     _fraction_time: List[str]
     _treatment_time: int
+
+    def __str__(self):
+        return f"{self.__class__.__name__}(probability={self.probability()})"
+
+    def __repr__(self):
+        return self.__str__()
 
     def __eq__(self, other):
         return self.name() == other.name()
@@ -112,3 +128,17 @@ class WholeBrain(Cancer):
     _probability = WHOLE_BRAIN_PROBABILITY
     _fraction_time = WHOLE_BRAIN_FRACTION_NUMBER
     _treatment_time = 10
+
+
+CANCER_MAP = {
+    CRAINOSPINAL: Crainospinal,
+    BREAST: Breast,
+    BREAST_SPECIAL: BreastSpecial,
+    HEAD_NECK: HeadNeck,
+    ABDOMEN: Abdomen,
+    PELVIS: Pelvis,
+    CRANE: Crane,
+    LUNG: Lung,
+    LUNG_SPECIAL: LungSpecial,
+    WHOLE_BRAIN: WholeBrain,
+}

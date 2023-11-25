@@ -25,11 +25,16 @@ class Scheduler:
         self,
         period_length_days: int,
         machine_pool: MachinePool,
-        patient_generator: PatientGen,
+        patient_generator: Optional[PatientGen],
+        machine_calendar=None,
     ):
         self.machine_pool = machine_pool
         self.period_length_days = period_length_days
-        self.calendar = MachineCalendar(self.machine_pool, period_length_days)
+        self.calendar = (
+            MachineCalendar(self.machine_pool, period_length_days)
+            if not machine_calendar
+            else machine_calendar
+        )
         self.patient_generator = patient_generator
 
     def schedule(self):
@@ -41,7 +46,8 @@ class Scheduler:
             ax.clear()
 
             try:
-                self.process_patient(patient)
+                patient.assign_random_fraction_time()
+                self.process_patient(patient, print_report=True)
             except ExtendScheduleError:
                 self.calendar.get_report_data()
                 return
@@ -56,16 +62,6 @@ class Scheduler:
             period.allocate(days, cancer.treatment_time_minutes(), shift)
             return True
         return False
-
-    def deallocate_machines(self, machines_to_deallocate: List[BaseMachine]):
-        if machines_to_deallocate:
-            machine = machines_to_deallocate.pop(0)
-            while machine:
-                machine.deallocate()
-                try:
-                    machine = machines_to_deallocate.pop(0)
-                except IndexError:
-                    machine = None
 
     def get_machine(
         self,
@@ -85,28 +81,42 @@ class Scheduler:
                 return machine
         return None
 
-    def process_patient(self, patient):
-        days = patient.assign_fraction_time()  # length of the sliding window
+    @staticmethod
+    def print_report(
+        machine,
+        days,
+        shift,
+        cancer,
+    ):
+        table = PrettyTable(field_names=["Field", "Value"], align="r")
+        table.add_rows(
+            [
+                ["Machine", machine.name()],
+                ["Allocated for", days],
+                ["Day shift", shift],
+                ["Cancer", cancer.name()],
+                ["Treatment time, minutes", cancer.treatment_time_minutes()],
+            ]
+        )
+        print(table)
+
+    def process_patient(self, patient, print_report=False):
+        days = patient.fraction_time_days  # length of the sliding window
         cancer = patient.cancer
 
         machine = None
+        final_shift = -1
         for shift in range(self.period_length_days - days):
             machine = self.get_machine(cancer, days, shift)
             if machine:
-                table = PrettyTable(field_names=["Field", "Value"], align="r")
-                table.add_rows(
-                    [
-                        ["Machine", machine.name()],
-                        ["Allocated for", days],
-                        ["Day shift", shift],
-                        ["Cancer", cancer.name()],
-                        ["Treatment time, minutes", cancer.treatment_time_minutes()],
-                    ]
-                )
-                print(table)
+                final_shift = 0
+                if print_report:
+                    self.print_report(machine, days, shift, cancer)
                 break
             else:
                 print(f"No suitable machine for shift {shift}")
 
         if not machine:
             raise ExtendScheduleError
+
+        return machine, final_shift
