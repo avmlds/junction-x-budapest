@@ -31,20 +31,21 @@ class Cancer:
     _fraction_time: List[str]
     _treatment_time: int
 
-    def name(self):
-        return self.__class__.__name__.lower()
+    @classmethod
+    def name(cls):
+        return cls.__name__.lower()
 
-    @property
-    def probability(self) -> float:
-        return self._probability
+    @classmethod
+    def probability(cls) -> float:
+        return cls._probability
 
-    @property
-    def fraction_time(self):
-        return self._fraction_time
+    @classmethod
+    def fraction_time(cls):
+        return cls._fraction_time
 
-    @property
-    def treatment_time(self):
-        return self._treatment_time
+    @classmethod
+    def treatment_time_minutes(cls):
+        return cls._treatment_time
 
 
 class Crainospinal(Cancer):

@@ -2,7 +2,6 @@ from typing import Set, Generator, Any
 
 
 class AllocatableEntity:
-
     def name(self):
         raise NotImplementedError
 
@@ -20,5 +19,7 @@ class AllocatableEntity:
     def available_treatments(self) -> Set[str]:
         raise NotImplementedError
 
-    def machine_gen(self, cancer_type: str) -> Generator["AllocatableEntity", Any, None]:
+    def machine_gen(
+        self, cancer_type: str
+    ) -> Generator["AllocatableEntity", Any, None]:
         raise NotImplementedError

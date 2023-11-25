@@ -13,7 +13,6 @@ class NotEnoughDaysError(Exception):
 
 
 class Day:
-
     def __str__(self):
         return f"{self.__class__.__name__}(time_left={self.time_left()})"
 
@@ -49,9 +48,10 @@ class Day:
 
 
 class Period:
-
     def __str__(self):
-        return f"{self.__class__.__name__}(period_length_days={self.period_length_days})"
+        return (
+            f"{self.__class__.__name__}(period_length_days={self.period_length_days})"
+        )
 
     def __repr__(self):
         return self.__str__()
@@ -60,11 +60,18 @@ class Period:
         self.period_length_days = period_length_days
         self.days = [Day() for _ in range(self.period_length_days)]
 
-    def _can_allocate_row(self, minutes_to_allocate: int, days_to_allocate: int, shift: int = 0):
-        return all(day.can_allocate(minutes_to_allocate) for day in self.days[shift:shift + days_to_allocate])
+    def _can_allocate_row(
+        self, minutes_to_allocate: int, days_to_allocate: int, shift: int = 0
+    ):
+        return all(
+            day.can_allocate(minutes_to_allocate)
+            for day in self.days[shift : shift + days_to_allocate]
+        )
 
-    def _allocate_row(self, minutes_to_allocate: int, days_to_allocate: int, shift: int = 0):
-        for day in self.days[shift:shift + days_to_allocate]:
+    def _allocate_row(
+        self, minutes_to_allocate: int, days_to_allocate: int, shift: int = 0
+    ):
+        for day in self.days[shift : shift + days_to_allocate]:
             day.allocate(minutes_to_allocate)
         return self
 

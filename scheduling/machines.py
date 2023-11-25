@@ -1,24 +1,26 @@
 import datetime
 from typing import Set
 
-from constants import (
+from scheduling.constants import (
     MACHINE_TB1,
-    CRAINOSPINAL,
-    BREAST,
-    BREAST_SPECIAL,
-    HEAD_NECK,
-    ABDOMEN,
-    PELVIS,
-    CRANE,
-    LUNG,
-    LUNG_SPECIAL,
     MACHINE_TB2,
     MACHINE_VB1,
-    WHOLE_BRAIN,
     MACHINE_VB2,
     MACHINE_U,
 )
 from scheduling.base import AllocatableEntity
+from scheduling.diseases import (
+    Crainospinal,
+    Breast,
+    BreastSpecial,
+    HeadNeck,
+    Abdomen,
+    Pelvis,
+    Crane,
+    Lung,
+    LungSpecial,
+    WholeBrain,
+)
 
 
 class AlreadyAllocated(Exception):
@@ -97,15 +99,15 @@ class BaseMachine(AllocatableEntity):
 class TB1Machine(BaseMachine):
     _name = MACHINE_TB1
     _available_treatments = (
-        CRAINOSPINAL,
-        BREAST,
-        BREAST_SPECIAL,
-        HEAD_NECK,
-        ABDOMEN,
-        PELVIS,
-        CRANE,
-        LUNG,
-        LUNG_SPECIAL,
+        Crainospinal.name(),
+        Breast.name(),
+        BreastSpecial.name(),
+        HeadNeck.name(),
+        Abdomen.name(),
+        Pelvis.name(),
+        Crane.name(),
+        Lung.name(),
+        LungSpecial.name(),
     )
 
 
@@ -116,14 +118,14 @@ class TB2Machine(TB1Machine):
 class VB1Machine(BaseMachine):
     _name = MACHINE_VB1
     _available_treatments = {
-        BREAST,
-        HEAD_NECK,
-        ABDOMEN,
-        PELVIS,
-        CRANE,
-        LUNG,
-        LUNG_SPECIAL,
-        WHOLE_BRAIN,
+        Breast.name(),
+        HeadNeck.name(),
+        Abdomen.name(),
+        Pelvis.name(),
+        Crane.name(),
+        Lung.name(),
+        LungSpecial.name(),
+        WholeBrain.name(),
     }
 
 
@@ -133,4 +135,4 @@ class VB2Machine(VB1Machine):
 
 class UMachine(BaseMachine):
     _name = MACHINE_U
-    _available_treatments = {BREAST, WHOLE_BRAIN}
+    _available_treatments = {Breast.name(), WholeBrain.name()}

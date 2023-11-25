@@ -2,6 +2,7 @@ from scheduling.calendar import Period
 from scheduling.constants import CANCER_TYPES, CRAINOSPINAL, BREAST_SPECIAL, WHOLE_BRAIN, CRANE, BREAST
 from scheduling.machine_pool import MachinePool
 from scheduling.machines import TB1Machine, TB2Machine, VB1Machine, VB2Machine, UMachine
+from scheduling.patients import PatientGen
 from scheduling.scheduler import Scheduler
 
 if __name__ == "__main__":
@@ -16,16 +17,25 @@ if __name__ == "__main__":
         u_pool,
     ])
 
+    patient_flow = PatientGen()
+
     scheduler = Scheduler(
         period=Period(5000),
         machine_pool=super_pool,
+        patient_generator=patient_flow,
     )
 
+    for patient in patient_flow.get_patient():
 
+        days = patient.assign_fraction_time()
+        cancer = patient.cancer_type
 
-    for cancer_type in CANCER_TYPES:
-        machine = super_pool.select_machine(cancer_type)
-        machine.allocate(cancer_type)
-        print(machine, machine.is_allocated)
+        machine = super_pool.select_machine(cancer.name())
+        machine.allocate(cancer.name())
+        print(
+            f"Machine {machine.name()} was allocated for {days} days "
+            f"to treat patient {patient.name} with {cancer.name()} cancer. "
+            f"Treatment time will be {cancer.treatment_time_minutes()} minutes long"
+        )
         machine.deallocate()
-        print(machine, machine.is_allocated)
+        print(f"Machine {machine.name()} was deallocated")

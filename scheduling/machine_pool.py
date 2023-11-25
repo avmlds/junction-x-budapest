@@ -5,7 +5,6 @@ from scheduling.machines import BaseMachine
 
 
 class MachinePool(AllocatableEntity):
-
     def __init__(self, name: str, machines: List[Union[BaseMachine, "MachinePool"]]):
         self._name = name
         self.machines = machines
@@ -39,6 +38,8 @@ class MachinePool(AllocatableEntity):
         return cancer_type in self.available_treatments
 
     def machine_gen(self, cancer_type: str):
-        machines = [m for m in self.machines if m.can_treat(cancer_type) and not m.is_allocated]
+        machines = [
+            m for m in self.machines if m.can_treat(cancer_type) and not m.is_allocated
+        ]
         for machine in machines:
             yield from machine.machine_gen(cancer_type)

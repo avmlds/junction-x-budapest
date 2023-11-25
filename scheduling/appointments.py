@@ -11,7 +11,7 @@ class Appointment:
         allocated_time_minutes: int,
         patient: Patient,
         machine: Type[BaseMachine],
-        day: Day
+        day: Day,
     ):
         self.patient = patient
         self.machine = machine
