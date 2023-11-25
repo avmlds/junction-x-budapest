@@ -68,7 +68,7 @@ class Scheduler:
         try:
             machine = self.machine_pool.select_machine(cancer)
         except StopIteration as e:
-            print(f"Can't allocate machine for {days} with shift.")
+            print(f"Can't allocate machine for {days} with shift {shift}.")
             return None
 
         if period is None:
