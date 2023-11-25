@@ -42,6 +42,11 @@ class InvalidCancerType(Exception):
 class BaseMachine(AllocatableEntity):
     _name: str
     _available_treatments: Set[Cancer]
+    _color: str
+
+    @property
+    def color(self):
+        return self._color
 
     def name(self):
         return self._name
@@ -109,6 +114,7 @@ class BaseMachine(AllocatableEntity):
 
 
 class TB1Machine(BaseMachine):
+    _color = "#7fc97f"
     _name = MACHINE_TB1
     _available_treatments = (
         Crainospinal,
@@ -124,10 +130,12 @@ class TB1Machine(BaseMachine):
 
 
 class TB2Machine(TB1Machine):
+    _color = "#beaed4"
     _name = MACHINE_TB2
 
 
 class VB1Machine(BaseMachine):
+    _color = "#fdc086"
     _name = MACHINE_VB1
     _available_treatments = {
         Breast,
@@ -142,9 +150,11 @@ class VB1Machine(BaseMachine):
 
 
 class VB2Machine(VB1Machine):
+    _color = "#ffff99"
     _name = MACHINE_VB2
 
 
 class UMachine(BaseMachine):
+    _color = "#386cb0"
     _name = MACHINE_U
     _available_treatments = {Breast, WholeBrain}

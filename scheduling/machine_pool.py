@@ -25,7 +25,7 @@ class MachinePool(AllocatableEntity):
     def name(self):
         return self._name
 
-    def get_all_machines(self):
+    def get_all_machines(self) -> List[BaseMachine]:
         machines = []
         for machine in self.machines:
             machines.extend(machine.get_all_machines())

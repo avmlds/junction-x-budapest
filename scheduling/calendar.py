@@ -1,6 +1,9 @@
 import copy
 from typing import List, Optional
 
+import numpy as np
+from matplotlib import pyplot as plt
+
 from scheduling.machine_pool import MachinePool
 from scheduling.machines import BaseMachine
 
@@ -103,7 +106,6 @@ class Period:
 
 
 class MachineCalendar:
-
     def __str__(self):
         return f"{self.__class__.__name__}(calendar={self.calendar})"
 
@@ -111,10 +113,32 @@ class MachineCalendar:
         return self.__str__()
 
     def __init__(self, machine_pool: MachinePool, calendar_length_days: int = 365):
-
+        self.calendar_length_days = calendar_length_days
         self.calendar = {
-            machine: Period(calendar_length_days) for machine in machine_pool.get_all_machines()
+            machine: Period(calendar_length_days)
+            for machine in machine_pool.get_all_machines()
         }
 
     def __getitem__(self, item: BaseMachine):
         return self.calendar[item]
+
+    def visualize(self, ax):
+        x = np.arange(self.calendar_length_days)
+
+        num_bars_in_group = len(self.calendar.keys())
+        gap_between_bargroups = 0.15
+        gap_between_bars_in_group = 0.03
+
+        bar_width = (
+            (1.0 - gap_between_bargroups) + gap_between_bars_in_group
+        ) / num_bars_in_group
+
+        for num, (machine, period) in enumerate(self.calendar.items()):
+            ys = [day.time_left() / 100 for day in period.days]
+            ax.bar(
+                x + num * bar_width,
+                ys,
+                color=machine.color,
+                width=bar_width - gap_between_bars_in_group,
+                align="center",
+            )

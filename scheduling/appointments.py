@@ -1,6 +1,6 @@
 from typing import Type
 
-from data import Patient
+from scheduling.patients import Patient
 from scheduling.calendar import Day
 from scheduling.machines import BaseMachine
 
