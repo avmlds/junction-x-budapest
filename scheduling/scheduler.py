@@ -1,11 +1,10 @@
+import sys
 from typing import Optional, List
 
 from matplotlib import pyplot as plt
-import matplotlib
+from prettytable import PrettyTable
 
 from scheduling.priority import MachinePriority
-
-matplotlib.use("TkAgg")
 
 from scheduling.diseases import Cancer
 from scheduling.machines import BaseMachine
@@ -20,7 +19,7 @@ class ExtendScheduleError(Exception):
 
 
 class Scheduler:
-    DRAW_SLEEP = 0.01
+    DRAW_SLEEP = 0.00001
 
     def __init__(
         self,
@@ -41,7 +40,11 @@ class Scheduler:
         for patient in self.patient_generator.get_patient():
             ax.clear()
 
-            self.process_patient(patient)
+            try:
+                self.process_patient(patient)
+            except ExtendScheduleError:
+                self.calendar.get_report_data()
+                return
 
             self.calendar.visualize(ax)
             plt.pause(self.DRAW_SLEEP)
@@ -90,13 +93,17 @@ class Scheduler:
         for shift in range(self.period_length_days - days):
             machine = self.get_machine(cancer, days, shift)
             if machine:
-                print(
-                    f"Machine:        {machine.name()}\n"
-                    f"Allocated for:  {days} days\n"
-                    f"Day shift:      {shift} days\n"
-                    f"Cancer:         '{cancer.name()}'\n"
-                    f"Treatment time:  {cancer.treatment_time_minutes()}\n"
+                table = PrettyTable(field_names=["Field", "Value"], align="r")
+                table.add_rows(
+                    [
+                        ["Machine", machine.name()],
+                        ["Allocated for", days],
+                        ["Day shift", shift],
+                        ["Cancer", cancer.name()],
+                        ["Treatment time, minutes", cancer.treatment_time_minutes()],
+                    ]
                 )
+                print(table)
                 break
             else:
                 print(f"No suitable machine for shift {shift}")

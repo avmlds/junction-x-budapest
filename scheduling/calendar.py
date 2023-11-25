@@ -2,6 +2,7 @@ import copy
 from typing import List, Optional, TYPE_CHECKING
 
 import numpy as np
+from prettytable import PrettyTable
 
 if TYPE_CHECKING:
     from scheduling.machine_pool import MachinePool
@@ -17,6 +18,9 @@ class AllocationError(Exception):
 class NotEnoughDaysError(Exception):
     def __init__(self):
         super().__init__("Not enough days to allocate")
+
+
+YEAR_LEN_DAYS = 356
 
 
 class Day:
@@ -118,6 +122,22 @@ class Period:
         return self._allocate_row(minutes_to_allocate, days_to_allocate, shift)
 
 
+class MachineUsage:
+    def __init__(self, name: str, usage: float):
+        self.name = name
+        self.usage = usage
+
+
+class CalendarRow(dict):
+    def __init__(self, day, machine_usage: List[MachineUsage]):
+        super().__init__()
+        self["day"] = day
+        for machine in machine_usage:
+            if self[machine.name] is not None:
+                raise Exception("Already exist")
+            self[machine.name] = machine.usage
+
+
 class MachineCalendar:
     def __str__(self):
         return f"{self.__class__.__name__}(calendar={self.calendar})"
@@ -125,7 +145,9 @@ class MachineCalendar:
     def __repr__(self):
         return self.__str__()
 
-    def __init__(self, machine_pool: "MachinePool", calendar_length_days: int = 365):
+    def __init__(
+        self, machine_pool: "MachinePool", calendar_length_days: int = YEAR_LEN_DAYS
+    ):
         self.calendar_length_days = calendar_length_days
         self.calendar = {
             machine: Period(calendar_length_days)
@@ -134,6 +156,36 @@ class MachineCalendar:
 
     def __getitem__(self, item: BaseMachine):
         return self.calendar[item]
+
+    def get_report_data(self, days: int = YEAR_LEN_DAYS):
+        machines = sorted(
+            [machine for machine in self.calendar.keys()],
+            key=lambda machine: machine.name(),
+        )
+
+        table = PrettyTable()
+        table.title = "Utilization report"
+        table.field_names = (
+            ["Day"] + [machine.name() for machine in machines] + ["Average"]
+        )
+
+        for day_pointer in range(min(days, self.calendar_length_days)):
+
+            row = [day_pointer]
+
+            sum_percentages = 0
+            for machine in machines:
+                load_level = self.calendar[machine].days[day_pointer].load_level()
+                utilization_percentage = round(1 - load_level) * 100
+                sum_percentages += (1 - load_level) * 100
+                row.append(f"{utilization_percentage}%")
+
+            row.append(f"{round(sum_percentages / len(machines), 2)}%")
+
+            table.add_row(row)
+            day_pointer += 1
+
+        print(table)
 
     def visualize(self, ax):
         x = np.arange(self.calendar_length_days)
