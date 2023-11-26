@@ -1,6 +1,7 @@
 from typing import List
 
 from fastapi import Depends, HTTPException
+from starlette.middleware.cors import CORSMiddleware
 
 from scheduling.calendar import NotEnoughDaysError
 from scheduling.constants import TWO_YEAR_LEN_DAYS
@@ -25,6 +26,13 @@ from server.models import (
 from fastapi import FastAPI
 
 app = FastAPI()
+app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 
 @app.post("/schedule", response_model=MakeAppointmentResponse)
