@@ -41,6 +41,15 @@ class Cancer:
     _fraction_time: List[str]
     _treatment_time: int
 
+    @classmethod
+    def to_dict(cls):
+        return {
+            "name": cls.name(),
+            "probability": cls.probability(),
+            "fraction_times": cls.fraction_time(),
+            "treatment_time_minutes": cls.treatment_time_minutes(),
+        }
+
     def __str__(self):
         return f"{self.__class__.__name__}(probability={self.probability()})"
 

@@ -1,6 +1,7 @@
 from scheduling.calendar import MachineCalendar
 from scheduling.machine_pool import MachinePool
 from scheduling.machines import TB2Machine, VB2Machine, VB1Machine, TB1Machine, UMachine
+from scheduling.patients import PatientGen
 
 _CACHE = {}
 
@@ -22,3 +23,9 @@ def get_machine_calendar(machine_pool, period_length_days) -> MachineCalendar:
     if not _CACHE.get("machine_calendar"):
         _CACHE["machine_calendar"] = MachineCalendar(machine_pool, period_length_days)
     return _CACHE["machine_calendar"]
+
+
+def get_patient_generator() -> PatientGen:
+    if not _CACHE.get("patient_generator"):
+        _CACHE["patient_generator"] = PatientGen()
+    return _CACHE["patient_generator"]
