@@ -91,6 +91,15 @@ class BaseMachine(AllocatableEntity):
         self._allocated = False
         return self
 
+    def to_dict(self):
+        return {
+            "name": self.name(),
+            "probability_to_treat": self.probability_to_treat(),
+            "available_treatments": [
+                cancer.to_dict() for cancer in self.available_treatments
+            ],
+        }
+
     @property
     def available_treatments(self):
         return self._available_treatments

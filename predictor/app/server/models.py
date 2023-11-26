@@ -50,3 +50,11 @@ class PatientModel(BaseModel):
         -1, description="Prescribed fraction time. -1 means that no time was prescribed"
     )
     cancer: CancerModel
+
+
+class MachineModel(BaseModel):
+    name: str
+    probability_to_treat: float = Field(
+        description="Sum of the probabilities to treat cancers"
+    )
+    available_treatments: List[CancerModel]
