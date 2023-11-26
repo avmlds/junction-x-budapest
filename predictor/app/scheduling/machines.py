@@ -10,7 +10,7 @@ from scheduling.constants import (
 )
 from scheduling.base import AllocatableEntity
 from scheduling.diseases import (
-    Crainospinal,
+    Craniospinal,
     Breast,
     BreastSpecial,
     HeadNeck,
@@ -126,7 +126,7 @@ class TB1Machine(BaseMachine):
     _color = "#7fc97f"
     _name = MACHINE_TB1
     _available_treatments = (
-        Crainospinal,
+        Craniospinal,
         Breast,
         BreastSpecial,
         HeadNeck,

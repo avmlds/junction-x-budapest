@@ -6,7 +6,7 @@ from faker import Faker
 
 from scheduling.diseases import Cancer, CANCER_MAP
 from scheduling.diseases import (
-    Crainospinal,
+    Craniospinal,
     Breast,
     BreastSpecial,
     HeadNeck,
@@ -69,7 +69,7 @@ class Patient:
 class PatientGen:
 
     cancers = [
-        Crainospinal,
+        Craniospinal,
         Breast,
         BreastSpecial,
         HeadNeck,

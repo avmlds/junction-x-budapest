@@ -2,8 +2,8 @@ import random
 from typing import List
 
 from scheduling.constants import (
-    CRAINOSPINAL_PROBABILITY,
-    CRAINOSPINAL_FRACTION_NUMBER,
+    CRANIOSPINAL_PROBABILITY,
+    CRANIOSPINAL_FRACTION_NUMBER,
     BREAST_PROBABILITY,
     BREAST_FRACTION_NUMBER,
     BREAST_SPECIAL_PROBABILITY,
@@ -22,7 +22,7 @@ from scheduling.constants import (
     LUNG_SPECIAL_FRACTION_NUMBER,
     WHOLE_BRAIN_PROBABILITY,
     WHOLE_BRAIN_FRACTION_NUMBER,
-    CRAINOSPINAL,
+    CRANIOSPINAL,
     BREAST,
     BREAST_SPECIAL,
     HEAD_NECK,
@@ -79,9 +79,9 @@ class Cancer:
         return cls._treatment_time
 
 
-class Crainospinal(Cancer):
-    _probability = CRAINOSPINAL_PROBABILITY
-    _fraction_time = CRAINOSPINAL_FRACTION_NUMBER
+class Craniospinal(Cancer):
+    _probability = CRANIOSPINAL_PROBABILITY
+    _fraction_time = CRANIOSPINAL_FRACTION_NUMBER
     _treatment_time = 30
 
 
@@ -140,14 +140,14 @@ class WholeBrain(Cancer):
 
 
 CANCER_MAP = {
-    CRAINOSPINAL: Crainospinal,
-    BREAST: Breast,
-    BREAST_SPECIAL: BreastSpecial,
-    HEAD_NECK: HeadNeck,
-    ABDOMEN: Abdomen,
-    PELVIS: Pelvis,
-    CRANE: Crane,
-    LUNG: Lung,
-    LUNG_SPECIAL: LungSpecial,
-    WHOLE_BRAIN: WholeBrain,
+    Craniospinal.name(): Craniospinal,
+    Breast.name(): Breast,
+    BreastSpecial.name(): BreastSpecial,
+    HeadNeck.name(): HeadNeck,
+    Abdomen.name(): Abdomen,
+    Pelvis.name(): Pelvis,
+    Crane.name(): Crane,
+    Lung.name(): Lung,
+    LungSpecial.name(): LungSpecial,
+    WholeBrain.name(): WholeBrain,
 }

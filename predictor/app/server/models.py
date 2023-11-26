@@ -11,7 +11,6 @@ class MakeAppointmentRequest(BaseModel):
     name: str
     cancer_type: str = Field(enum=list(CANCER_MAP.keys()))
     fraction_time: int
-    is_urgent: bool = False
 
 
 class MakeAppointmentResponse(BaseModel):

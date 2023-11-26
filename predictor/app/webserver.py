@@ -1,7 +1,6 @@
-from typing import List
-
 from fastapi import Depends, HTTPException
 from starlette.middleware.cors import CORSMiddleware
+from starlette.responses import HTMLResponse
 
 from scheduling.calendar import NotEnoughDaysError
 from scheduling.constants import TWO_YEAR_LEN_DAYS
@@ -27,12 +26,12 @@ from fastapi import FastAPI
 
 app = FastAPI()
 app.add_middleware(
-        CORSMiddleware,
-        allow_origins=["*"],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.post("/schedule", response_model=MakeAppointmentResponse)
@@ -114,3 +113,24 @@ def get_machines(
         "items": data[offset : offset + limit],
         "total": len(data),
     }
+
+
+@app.get("/report")
+def get_report(
+    start_day: int,
+    end_day: int,
+    machine_pool=Depends(get_machine_pool),
+):
+    machine_calendar = get_machine_calendar(machine_pool, TWO_YEAR_LEN_DAYS)
+    table = machine_calendar.get_report_data(end_day, start_day)
+
+    return HTMLResponse(
+        table.get_html_string(
+            preserve_internal_border=True,
+            attributes={
+                "border": "1 px",
+                "cellpadding": "15 px",
+                "align": "center",
+            },
+        )
+    )

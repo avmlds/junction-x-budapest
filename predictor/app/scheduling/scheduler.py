@@ -49,7 +49,8 @@ class Scheduler:
                 patient.assign_random_fraction_time()
                 self.process_patient(patient, print_report=True)
             except ExtendScheduleError:
-                self.calendar.get_report_data()
+                table = self.calendar.get_report_data()
+                print(table)
                 return
 
             self.calendar.visualize(ax)

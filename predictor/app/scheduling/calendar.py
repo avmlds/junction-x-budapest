@@ -183,7 +183,9 @@ class MachineCalendar:
         daily_load["average_load"] = round(sum_percentages / len(machines), 2)
         return daily_load
 
-    def get_report_data(self, days: int = YEAR_LEN_DAYS):
+    def get_report_data(
+        self, days: int = YEAR_LEN_DAYS, start_day: int = 0
+    ) -> PrettyTable:
         machines = sorted(
             [machine for machine in self.calendar.keys()],
             key=lambda machine: machine.name(),
@@ -195,14 +197,14 @@ class MachineCalendar:
             ["Day"] + [machine.name() for machine in machines] + ["Average"]
         )
 
-        for day_pointer in range(min(days, self.calendar_length_days)):
+        for day_pointer in range(start_day, min(days, self.calendar_length_days)):
 
-            row = [day_pointer]
+            row = [day_pointer + 1]  # just for managers, they don't like leading zero
 
             sum_percentages = 0
             for machine in machines:
                 load_level = self.calendar[machine].days[day_pointer].load_level()
-                utilization_percentage = round(1 - load_level, 2) * 100
+                utilization_percentage = round((1 - load_level) * 100, 2)
                 sum_percentages += (1 - load_level) * 100
                 row.append(f"{utilization_percentage}%")
 
@@ -211,7 +213,7 @@ class MachineCalendar:
             table.add_row(row)
             day_pointer += 1
 
-        print(table)
+        return table
 
     def visualize(self, ax):
         x = np.arange(self.calendar_length_days)
