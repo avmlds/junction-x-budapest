@@ -1,0 +1,19 @@
+version: "2.7"
+
+networks:
+  default:
+
+services:
+  web:
+    build:
+      context: ./predictor
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+
+  streamlit:
+    build:
+      context: ./predictor
+      dockerfile: Dockerfile_frontend
+    ports:
+      - "8501:8501"

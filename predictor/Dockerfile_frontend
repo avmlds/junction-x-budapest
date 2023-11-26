@@ -1,0 +1,10 @@
+FROM python:3.9-buster
+WORKDIR /app/
+ADD ./app/requirements.txt /app/requirements.txt
+RUN pip3 install cython
+RUN pip3 install streamlit==1.28.2
+RUN pip3 install -r /app/requirements.txt
+ENV PYTHONPATH=/app
+ADD ./app /app
+EXPOSE 8501
+CMD ["streamlit", "run", "frontend_app.py", "--server.port", "8501"]
